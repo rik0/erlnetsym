@@ -16,6 +16,9 @@ handle_cast({tick, Age, Max_Age}, State) ->
     To_Spawn = (State#state.spawner)(Age, Max_Age),
     To_Activate = (State#state.activator)(Age, Max_Age),
     To_Destroy = (State#state.destroyer)(Age, Max_Age),
+    lists:map(fun spawn_node/1, To_Spawn),
+    lists:map(fun activate_node/1, To_Activate),
+    lists:map(fun destroy_node/1, To_Destroy),
     {noreply, State}.
 
 handle_call({eow, _Age}, _From, State) ->
@@ -43,4 +46,13 @@ tick(Age, Max_Age) ->
 eow(Age) ->
     gen_server:call(erlnetsym_activator, {eow, Age}).
 
+% internal
+spawn_node({_Module, _Class, _Init_Args}) ->
+    ok.
+
+activate_node({_Node}) ->
+    ok.
+
+destroy_node({_Node}) ->
+    ok.
 

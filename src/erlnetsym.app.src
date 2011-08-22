@@ -2,7 +2,7 @@
  [
   {description, "Network Generation Toolkit"},
   {vsn, "0.0.1"},
-  {registered, [erlnetsym_graph]},
+  {registered, [erlnetsym_graph, erlnetsym_activator]},
   {applications, [
                   kernel,
                   stdlib
