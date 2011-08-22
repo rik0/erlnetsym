@@ -1,0 +1,12 @@
+{application, erlnetsym,
+ [
+  {description, "Network Generation Toolkit"},
+  {vsn, "0.0.1"},
+  {registered, [erlnetsym_graph]},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { erlnetsym_app, []}},
+  {env, []}
+ ]}.
