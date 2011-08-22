@@ -22,7 +22,7 @@ handle_cast({tick, Age, Max_Age}, State) ->
     {noreply, State}.
 
 handle_call({eow, _Age}, _From, State) ->
-    {reply, ok, State}.
+    {stop, ok, State}.
 
 handle_info(Request, State) ->
     io:format("~p~n", [Request]),
