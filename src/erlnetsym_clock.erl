@@ -1,10 +1,10 @@
 -module(erlnetsym_clock).
 
--export([init/1]).
+-export([spawn_link/1]).
 
 
-init(Max_Steps) ->
-    run(0, Max_Steps).
+spawn_link([Max_Steps]) ->
+    spawn_link(?MODULE, run, [0, Max_Steps]).
 
 run(Step, Max_Steps) when Step < Max_Steps ->
     erlnetsym_activator:tick(Step, Max_Steps),
