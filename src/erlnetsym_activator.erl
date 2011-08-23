@@ -3,14 +3,13 @@
 
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
--export([tick/2, eow/1, start_link/3]).
+-export([tick/2, eow/1, start_link/1]).
 
 -define(SERVER, ?MODULE).
 -record(state, {activator, spawner, destroyer}).
 
 init([Activator, Spawner, Destroyer]) ->
-    {ok, #state{activator=Activator, spawner=Spawner,
-            destroyer=Destroyer}}.
+    {ok, #state{activator=Activator, spawner=Spawner, destroyer=Destroyer}}.
 
 handle_cast({tick, Age, Max_Age}, State) ->
     To_Spawn = (State#state.spawner)(Age, Max_Age),
@@ -22,7 +21,8 @@ handle_cast({tick, Age, Max_Age}, State) ->
     {noreply, State}.
 
 handle_call({eow, _Age}, _From, State) ->
-    {stop, ok, State}.
+    %{stop, ok, State}.
+    {noreply, State}.
 
 handle_info(Request, State) ->
     io:format("~p~n", [Request]),
@@ -36,9 +36,9 @@ code_change(_OldVsn, State, _Extra) ->
 
 %% API
 
-start_link(Activator, Spawner, Destroyer) ->
-    gen_server:start_link({local, ?SERVER}, ?MODULE,
-        [Activator, Spawner, Destroyer]).
+start_link(Args) ->
+    gen_server:start_link({local, ?SERVER}, ?MODULE, Args, [{debug, [trace, log, statistics]}]).
+
 
 tick(Age, Max_Age) ->
     gen_server:cast(erlnetsym_activator, {tick, Age, Max_Age}).
