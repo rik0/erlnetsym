@@ -31,7 +31,7 @@ init([]) ->
                 fun(_Step, _Max) -> [] end,
                 fun(_Step, _Max) -> [] end]]},
         permanent, 2000, worker, [erlnetsym_activator]},
-    Children = [Activator],
+    Children = [Activator, Clock],
     Restart_Strategy = {one_for_one, 5, 5},
     {ok, {Restart_Strategy, Children} }.
 
