@@ -1,0 +1,11 @@
+#!/usr/bin/env escript
+%% vim: set filetype=erlang
+%% -*- erlang -*-
+%%! -smp enable -pa ebin
+
+main(["quick"]) ->
+    application:start(erlnetsym),
+    lists:map(fun(App) -> io:format("~p~n", [App]) end, 
+        application:which_applications()),
+
+    init:stop().
