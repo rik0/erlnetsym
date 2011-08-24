@@ -71,7 +71,9 @@ code_change(_OldVsn, State, _Extra) ->
 %% ------------------------------------------------------------------
 %% Internal Function Definitions
 %% ------------------------------------------------------------------
-spawn_node({_Module, _Class, _Init_Args}) ->
+spawn_node({Module, Init, Init_Args}) ->
+    Res = gen_server:start_link(Module, Init, Init_Args),
+    erlnetsym_snetdb:register_node(Res),
     ok.
 
 activate_node({_Node}) ->
