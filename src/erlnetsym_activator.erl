@@ -22,8 +22,8 @@ handle_cast({tick, Age}, State) ->
     lists:map(fun destroy_node/1, To_Destroy),
     {noreply, State}.
 
-handle_call({eow, _Age}, _From, State) ->
-    {stop, ok}.
+handle_call({eow, Age}, From, State) ->
+    {stop, normal, Age, State}.
 
 handle_info(Request, State) ->
     io:format("~p~n", [Request]),
@@ -45,7 +45,7 @@ tick(Age) ->
     gen_server:cast(erlnetsym_activator, {tick, Age}).
 
 eow(Age) ->
-    gen_server:call(erlnetsym_activator, {eow, Age}),
+    gen_server:call(erlnetsym_activator, {eow, Age}).
 
 % internal
 spawn_node({_Module, _Class, _Init_Args}) ->
