@@ -1,9 +1,8 @@
 -module(erlnetsym_activator).
 -behaviour(gen_server).
 -define(SERVER, ?MODULE).
-
--record(state, {activator, spawner, destroyer}).
 -include("include/time.hrl").
+-include("include/activator_state.hrl").
 
 
 %% ------------------------------------------------------------------
@@ -39,21 +38,24 @@ eow(Age) ->
 %% gen_server Function Definitions
 %% ------------------------------------------------------------------
 
-init([Activator, Spawner, Destroyer]) ->
-    {ok, #state{activator=Activator, spawner=Spawner, destroyer=Destroyer}}.
+init(State) ->
+    {ok, State, 0}.
 
-handle_cast({tick, Age}, State) ->
-    To_Spawn = (State#state.spawner)(Age),
-    To_Activate = (State#state.activator)(Age),
-    To_Destroy = (State#state.destroyer)(Age),
+handle_cast({tick, Age}, #state{module=Module} = State) ->
+    To_Spawn = apply(Module, spawner, [Age]),
+    To_Activate = apply(Module, activator, [Age]),
+    To_Destroy = apply(Module, destroyer, [Age]),
     lists:map(fun spawn_node/1, To_Spawn),
     lists:map(fun activate_node/1, To_Activate),
     lists:map(fun destroy_node/1, To_Destroy),
     {noreply, State}.
 
-handle_call({eow, Age}, From, State) ->
+handle_call({eow, Age}, _From, State) ->
     {stop, normal, Age, State}.
 
+handle_info(timeout, #state{module=Module, init_args=Init_Args} = State) ->
+    apply(Module, init, Init_Args),
+    {noreply, State};
 handle_info(Request, State) ->
     io:format("~p~n", [Request]),
     {noreply, State}.

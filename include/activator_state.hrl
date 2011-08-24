@@ -1,0 +1,1 @@
+-record(state, {module, init_args}).
