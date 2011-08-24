@@ -1,14 +1,43 @@
 -module(erlnetsym_activator).
 -behaviour(gen_server).
+-define(SERVER, ?MODULE).
 
+-record(state, {activator, spawner, destroyer}).
 -include("include/time.hrl").
+
+
+%% ------------------------------------------------------------------
+%% API Function Exports
+%% ------------------------------------------------------------------
+
+-export([tick/1, eow/1, start_link/1]).
+
+
+%% ------------------------------------------------------------------
+%% gen_server Function Exports
+%% ------------------------------------------------------------------
 
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
--export([tick/1, eow/1, start_link/1]).
 
--define(SERVER, ?MODULE).
--record(state, {activator, spawner, destroyer}).
+
+%% ------------------------------------------------------------------
+%% API Function Definitions
+%% ------------------------------------------------------------------
+
+
+start_link(Args) ->
+    gen_server:start_link({local, ?SERVER}, ?MODULE, Args, [{debug, [trace, log, statistics]}]).
+
+tick(Age) ->
+    gen_server:cast(erlnetsym_activator, {tick, Age}).
+
+eow(Age) ->
+    gen_server:call(erlnetsym_activator, {eow, Age}).
+
+%% ------------------------------------------------------------------
+%% gen_server Function Definitions
+%% ------------------------------------------------------------------
 
 init([Activator, Spawner, Destroyer]) ->
     {ok, #state{activator=Activator, spawner=Spawner, destroyer=Destroyer}}.
@@ -35,19 +64,11 @@ terminate(_Reason, _State) ->
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
 
-%% API
-
-start_link(Args) ->
-    gen_server:start_link({local, ?SERVER}, ?MODULE, Args, [{debug, [trace, log, statistics]}]).
 
 
-tick(Age) ->
-    gen_server:cast(erlnetsym_activator, {tick, Age}).
-
-eow(Age) ->
-    gen_server:call(erlnetsym_activator, {eow, Age}).
-
-% internal
+%% ------------------------------------------------------------------
+%% Internal Function Definitions
+%% ------------------------------------------------------------------
 spawn_node({_Module, _Class, _Init_Args}) ->
     ok.
 
