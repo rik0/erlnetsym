@@ -54,7 +54,7 @@ handle_call({eow, Age}, _From, State) ->
     {stop, normal, Age, State}.
 
 handle_info(timeout, #state{module=Module, init_args=Init_Args} = State) ->
-    apply(Module, init, Init_Args),
+    ok = apply(Module, init, Init_Args),
     {noreply, State};
 handle_info(Request, State) ->
     io:format("~p~n", [Request]),
