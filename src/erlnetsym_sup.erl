@@ -24,14 +24,15 @@ start_link() ->
 %% ===================================================================
 
 init([]) ->
-    Clock = {erlnetsym_clock, {erlnetsym_clock, start_link, [200]},
-        transient, 2000, worker, [erlnetsym_clock, erlnetsym_activator]},
+%    Clock = {erlnetsym_clock, {erlnetsym_clock, start_link, [i]},
+%        permanent, 2000, worker, [erlnetsym_clock, erlnetsym_activator]},
     Activator = {erlnetsym_activator, {erlnetsym_activator, start_link, 
             [[fun(_Step, _Max) -> [] end,
                 fun(_Step, _Max) -> [] end,
                 fun(_Step, _Max) -> [] end]]},
         permanent, 2000, worker, [erlnetsym_activator]},
-    Children = [Activator, Clock],
+    %Children = [Activator, Clock],
+    Children = [Activator],
     Restart_Strategy = {one_for_one, 5, 5},
     {ok, {Restart_Strategy, Children} }.
 

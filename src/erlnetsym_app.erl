@@ -10,7 +10,7 @@
 %% ===================================================================
 
 start(_StartType, _StartArgs) ->
-    erlnetsym_sup:start_link().
+    {ok, Pid} = erlnetsym_sup:start_link().
 
 stop(_State) ->
     ok.
