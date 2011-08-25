@@ -1,12 +1,12 @@
--module(erlnetsym_snetdb).
+-module(erlnetsym_ba).
 -behaviour(gen_server).
--define(SERVER, netdb).
+-define(SERVER, ?MODULE).
 
 %% ------------------------------------------------------------------
 %% API Function Exports
 %% ------------------------------------------------------------------
 
--export([start_link/0, register_node/1]).
+-export([start_link/0]).
 
 %% ------------------------------------------------------------------
 %% gen_server Function Exports
@@ -22,26 +22,18 @@
 start_link() ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
-
-register_node(Node_Id) ->
-    gen_server:call(?SERVER, {register, Node_Id}).
-
 %% ------------------------------------------------------------------
 %% gen_server Function Definitions
 %% ------------------------------------------------------------------
 
-init([]) ->
-    G = digraph:new([private]),
-    {ok, G}.
+init(Args) ->
+    {ok, Args}.
 
-handle_call({register, Node_Id}, _From, Graph) ->
-    digraph:add_vertex(Graph, Node_Id),
-    {noreply, ok, Graph};
-handle_call(_Request, _From, State) ->
-    {noreply, ok, State}.
+handle_call(Request, From, State) ->
+    erlnetsym_generic:process_call(?MODULE, Request, From State).
 
-handle_cast(_Msg, State) ->
-    {noreply, State}.
+handle_cast(Msg, State) ->
+    erlnetsym_generic:process_cast(?MODULE, Msg, State).
 
 handle_info(_Info, State) ->
     {noreply, State}.
@@ -55,3 +47,4 @@ code_change(_OldVsn, State, _Extra) ->
 %% ------------------------------------------------------------------
 %% Internal Function Definitions
 %% ------------------------------------------------------------------
+
