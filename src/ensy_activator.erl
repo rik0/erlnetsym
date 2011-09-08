@@ -1,4 +1,4 @@
--module(erlnetsym_activator).
+-module(ensy_activator).
 -behaviour(gen_server).
 -define(SERVER, ?MODULE).
 -include("include/time.hrl").
@@ -29,10 +29,10 @@ start_link(Args) ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, Args, [{debug, [trace, log, statistics]}]).
 
 tick(Age) ->
-    gen_server:cast(erlnetsym_activator, {tick, Age}).
+    gen_server:cast(ensy_activator, {tick, Age}).
 
 eow(Age) ->
-    gen_server:call(erlnetsym_activator, {eow, Age}).
+    gen_server:call(ensy_activator, {eow, Age}).
 
 %% ------------------------------------------------------------------
 %% gen_server Function Definitions
@@ -73,7 +73,7 @@ code_change(_OldVsn, State, _Extra) ->
 %% ------------------------------------------------------------------
 spawn_node({Module, Init, Init_Args}) ->
     Res = gen_server:start_link(Module, Init, Init_Args),
-    erlnetsym_snetdb:register_node(Res),
+    ensy_snetdb:register_node(Res),
     ok.
 
 activate_node({_Node}) ->

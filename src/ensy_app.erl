@@ -1,4 +1,4 @@
--module(erlnetsym_app).
+-module(ensy_app).
 
 -behaviour(application).
 
@@ -10,7 +10,7 @@
 %% ===================================================================
 
 start(_StartType, _StartArgs) ->
-    {ok, Pid} = erlnetsym_sup:start_link().
+    {ok, Pid} = ensy_sup:start_link().
 
 stop(_State) ->
     ok.

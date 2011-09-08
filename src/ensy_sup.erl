@@ -1,5 +1,5 @@
 
--module(erlnetsym_sup).
+-module(ensy_sup).
 
 -behaviour(supervisor).
 
@@ -25,11 +25,11 @@ start_link() ->
 %% ===================================================================
 
 init([]) ->
-    Clock = {erlnetsym_clock, {erlnetsym_clock, start_link, [200]},
-        transient, 2000, worker, [erlnetsym_clock, erlnetsym_activator]},
-    Activator = {erlnetsym_activator, {erlnetsym_activator, start_link, 
+    Clock = {ensy_clock, {ensy_clock, start_link, [200]},
+        transient, 2000, worker, [ensy_clock, ensy_activator]},
+    Activator = {ensy_activator, {ensy_activator, start_link, 
             [#state{module=stub_module, init_args=[]}]},
-        permanent, 2000, worker, [erlnetsym_activator]},
+        permanent, 2000, worker, [ensy_activator]},
     Children = [Clock],
     Restart_Strategy = {one_for_one, 1, 1},
     {ok, {Restart_Strategy, Children} }.

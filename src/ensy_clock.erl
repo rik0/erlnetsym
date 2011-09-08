@@ -1,4 +1,4 @@
--module(erlnetsym_clock).
+-module(ensy_clock).
 -behaviour(gen_server).
 -define(SERVER, ?MODULE).
 -include("include/time.hrl").
@@ -40,9 +40,9 @@ handle_cast(_Msg, State) ->
 handle_info(timeout, #age{current = Current, max=Max} = Time) ->
     case Current of
         Max -> 
-            %erlnetsym_activator:eow(Time),
+            %ensy_activator:eow(Time),
             {stop, normal, Time};
-        _ -> %erlnetsym_activator:tick(Time),
+        _ -> %ensy_activator:tick(Time),
             {noreply, Time#age{current = Current + 1}, 1}
     end;
 handle_info(Info, State) ->

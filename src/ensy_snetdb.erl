@@ -1,4 +1,4 @@
--module(erlnetsym_snetdb).
+-module(ensy_snetdb).
 -behaviour(gen_server).
 -define(SERVER, ?MODULE).
 

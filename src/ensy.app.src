@@ -1,12 +1,12 @@
-{application, erlnetsym,
+{application, ensy,
  [
   {description, "Network Generation Toolkit"},
   {vsn, "0.0.1"},
-  {registered, [erlnetsym_graph, erlnetsym_activator]},
+  {registered, [ensy_activator]},
   {applications, [
                   kernel,
                   stdlib
                  ]},
-  {mod, { erlnetsym_app, []}},
+  {mod, { ensy_app, []}},
   {env, []}
  ]}.

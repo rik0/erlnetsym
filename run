@@ -6,7 +6,8 @@
 
 main(_Args) ->
     code:add_path("ebin"),
-    application:start(erlnetsym),
+    application:start(sasl),
+    application:start(ensy),
     lists:map(fun(App) -> io:format("~p~n", [App]) end, 
         application:which_applications()),
     io:get_chars("> ", 0).
