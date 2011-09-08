@@ -1,6 +1,8 @@
-all: compile
+.PHONY: tags compile clean all run
 
-compile:
+all: compile tags
+
+compile: tags
 	rebar compile
 
 run: compile
@@ -8,4 +10,11 @@ run: compile
 
 clean:
 	rebar clean
+
+tags:
+	ctags -e -R -f TAGS .
+## ctags -R .
+
+
+
 
