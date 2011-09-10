@@ -46,12 +46,13 @@ handle_cast({tick, Age}, #state{module=Module} = State) ->
     To_Activate = apply(Module, activator, [Age]),
     To_Destroy = apply(Module, destroyer, [Age]),
     lists:map(fun spawn_node/1, To_Spawn),
-    lists:map(fun activate_node/1, To_Activate),
+    lists:map(fun activate_node/1, To_Activate), 
     lists:map(fun destroy_node/1, To_Destroy),
     {noreply, State}.
 
 handle_call({eow, Age}, _From, State) ->
-    {stop, normal, Age, State}.
+    io:format("~p~n", [Age]),
+    {stop, normal, State}.
 
 handle_info(timeout, #state{module=Module, init_args=Init_Args} = State) ->
     ok = apply(Module, init, Init_Args),
@@ -72,8 +73,7 @@ code_change(_OldVsn, State, _Extra) ->
 %% Internal Function Definitions
 %% ------------------------------------------------------------------
 spawn_node({Module, Init, Init_Args}) ->
-    Res = gen_server:start_link(Module, Init, Init_Args),
-    ensy_snetdb:register_node(Res),
+
     ok.
 
 activate_node({_Node}) ->

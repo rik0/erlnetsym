@@ -29,7 +29,7 @@ init([]) ->
         transient, 2000, worker, [ensy_clock, ensy_activator]},
     Activator = {ensy_activator, {ensy_activator, start_link, 
             [#state{module=stub_module, init_args=[]}]},
-        permanent, 2000, worker, [ensy_activator]},
+        transient, 2000, worker, [ensy_activator]},
     Children = [Clock],
     Restart_Strategy = {one_for_one, 1, 1},
     {ok, {Restart_Strategy, Children} }.
