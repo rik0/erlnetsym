@@ -25,8 +25,9 @@
 %% ------------------------------------------------------------------
 
 
-start_link([]) ->
-    gen_server:start_link({local, ?SERVER}, ?MODULE, [6], [{debug, [trace, log, statistics]}]).
+start_link({stub_module, Module, Init_Args}) ->
+    gen_server:start_link({local, ?SERVER}, ?MODULE, [#state{module=Module, init_args=Init_Args}], 
+            [{debug, []}]).
 
 tick(Age) ->
     gen_server:cast(?SERVER, {tick, Age}).
