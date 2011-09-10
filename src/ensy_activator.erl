@@ -52,22 +52,15 @@ handle_cast({tick, Age}, State) ->
     {noreply, State}.
 
 handle_call({eow, Age}, _From, State) ->
-    io:format("~p~n", [Age]),
-    %{stop, normal, State};
-    {reply, ok, State};
-handle_call(Whatever, From, State) ->
-    io:format("Got ~p from ~p~n", [Whatever, From]),
-    {reply, ok, State}.
+    {stop, normal, ok, State}.
 
 %handle_info(timeout, State) ->
     %ok = apply(Module, init, Init_Args),
     %{noreply, State};
 handle_info(Request, State) ->
-    io:format("~p~n", [Request]),
     {noreply, State}.
 
 terminate(Reason, State) ->
-    io:format("~p, ~p~n", [Reason, State]),
     ok.
 
 code_change(_OldVsn, State, _Extra) ->

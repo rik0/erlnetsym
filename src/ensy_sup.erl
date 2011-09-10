@@ -25,9 +25,9 @@ start_link() ->
 
 init([]) ->
     Clock = {ensy_clock, {ensy_clock, start_link, [{iterations, 200}]},
-        transient, 2000, worker, [ensy_clock, ensy_activator]},
+        temporary, 2000, worker, [ensy_clock, ensy_activator]},
     Activator = {ensy_activator, {ensy_activator, start_link, [{stub_module, foo, []}]},
-        transient, 2000, worker, [ensy_activator]},
+        temporary, 2000, worker, [ensy_activator]},
     Children = [Clock, Activator],
     Restart_Strategy = {one_for_one, 1, 1},
     {ok, {Restart_Strategy, Children} }.
