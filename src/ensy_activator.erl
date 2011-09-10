@@ -42,7 +42,7 @@ eow(Age) ->
 init(State) ->
     {ok, State, 0}.
 
-handle_cast({tick, Age}, State) ->
+handle_cast({tick, _Age}, State) ->
     %To_Spawn = apply(Module, spawner, [Age]),
     %To_Activate = apply(Module, activator, [Age]),
     %To_Destroy = apply(Module, destroyer, [Age]),
@@ -52,15 +52,15 @@ handle_cast({tick, Age}, State) ->
     {noreply, State}.
 
 handle_call({eow, Age}, _From, State) ->
-    {stop, normal, ok, State}.
+    {stop, normal, {ok, Age}, State}.
 
 %handle_info(timeout, State) ->
     %ok = apply(Module, init, Init_Args),
     %{noreply, State};
-handle_info(Request, State) ->
+handle_info(_Request, State) ->
     {noreply, State}.
 
-terminate(Reason, State) ->
+terminate(_Reason, _State) ->
     ok.
 
 code_change(_OldVsn, State, _Extra) ->
