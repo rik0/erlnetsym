@@ -24,7 +24,7 @@ start_link() ->
 %% ===================================================================
 
 init([]) ->
-    Clock = {ensy_clock, {ensy_clock, start_link, [200]},
+    Clock = {ensy_clock, {ensy_clock, start_link, [{iterations, 200}]},
         transient, 2000, worker, [ensy_clock, ensy_activator]},
     Activator = {ensy_activator, {ensy_activator, start_link, []},
         transient, 2000, worker, [ensy_activator]},

@@ -21,14 +21,14 @@
 %% API Function Definitions
 %% ------------------------------------------------------------------
 
-start_link(Max_Ticks) ->
-    gen_server:start_link({local, ?SERVER}, ?MODULE, [Max_Ticks], []).
+start_link(Iterations) ->
+    gen_server:start_link({local, ?SERVER}, ?MODULE, Iterations, []).
 
 %% ------------------------------------------------------------------
 %% gen_server Function Definitions
 %% ------------------------------------------------------------------
 
-init([Max_Ticks]) ->
+init({iterations, Max_Ticks}) ->
     {ok, #age{current=0, max=Max_Ticks}, 0}.
 
 handle_call(_Request, _From, State) ->
