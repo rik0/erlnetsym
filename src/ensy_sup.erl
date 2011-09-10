@@ -3,7 +3,6 @@
 
 -behaviour(supervisor).
 
--include("include/activator_state.hrl").
 %% API
 -export([start_link/0]).
 
@@ -27,9 +26,9 @@ start_link() ->
 init([]) ->
     Clock = {ensy_clock, {ensy_clock, start_link, [200]},
         transient, 2000, worker, [ensy_clock, ensy_activator]},
-    Activator = {ensy_activator, {ensy_activator, start_link, 
-            [#state{module=stub_module, init_args=[]}]},
+    Activator = {ensy_activator, {ensy_activator, start_link, []},
         transient, 2000, worker, [ensy_activator]},
+    %Children = [Clock, Activator],
     Children = [Clock],
     Restart_Strategy = {one_for_one, 1, 1},
     {ok, {Restart_Strategy, Children} }.

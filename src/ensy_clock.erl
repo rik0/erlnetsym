@@ -40,7 +40,7 @@ handle_cast(_Msg, State) ->
 handle_info(timeout, #age{current = Current, max=Max} = Time) ->
     case Current of
         Max -> 
-            ensy_activator:eow(Time),
+            %ok = ensy_activator:eow(Time),
             {stop, normal, Time};
         _ ->
             ensy_activator:tick(Time),

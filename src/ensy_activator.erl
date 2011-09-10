@@ -2,8 +2,8 @@
 -behaviour(gen_server).
 -define(SERVER, ?MODULE).
 -include("include/time.hrl").
--include("include/activator_state.hrl").
 
+-record(state, {module, init_args}).
 
 %% ------------------------------------------------------------------
 %% API Function Exports
@@ -25,14 +25,14 @@
 %% ------------------------------------------------------------------
 
 
-start_link(Args) ->
-    gen_server:start_link({local, ?SERVER}, ?MODULE, Args, [{debug, [trace, log, statistics]}]).
+start_link([]) ->
+    gen_server:start_link({local, ?SERVER}, ?MODULE, [6], [{debug, [trace, log, statistics]}]).
 
 tick(Age) ->
-    gen_server:cast(ensy_activator, {tick, Age}).
+    gen_server:cast(?SERVER, {tick, Age}).
 
 eow(Age) ->
-    gen_server:call(ensy_activator, {eow, Age}).
+    gen_server:call(?SERVER, {eow, Age}).
 
 %% ------------------------------------------------------------------
 %% gen_server Function Definitions
@@ -41,27 +41,32 @@ eow(Age) ->
 init(State) ->
     {ok, State, 0}.
 
-handle_cast({tick, Age}, #state{module=Module} = State) ->
-    To_Spawn = apply(Module, spawner, [Age]),
-    To_Activate = apply(Module, activator, [Age]),
-    To_Destroy = apply(Module, destroyer, [Age]),
-    lists:map(fun spawn_node/1, To_Spawn),
-    lists:map(fun activate_node/1, To_Activate), 
-    lists:map(fun destroy_node/1, To_Destroy),
+handle_cast({tick, Age}, State) ->
+    %To_Spawn = apply(Module, spawner, [Age]),
+    %To_Activate = apply(Module, activator, [Age]),
+    %To_Destroy = apply(Module, destroyer, [Age]),
+    %lists:map(fun spawn_node/1, To_Spawn),
+    %lists:map(fun activate_node/1, To_Activate), 
+    %lists:map(fun destroy_node/1, To_Destroy),
     {noreply, State}.
 
 handle_call({eow, Age}, _From, State) ->
     io:format("~p~n", [Age]),
-    {stop, normal, State}.
+    %{stop, normal, State};
+    {reply, ok, State};
+handle_call(Whatever, From, State) ->
+    io:format("Got ~p from ~p~n", [Whatever, From]),
+    {reply, ok, State}.
 
-handle_info(timeout, #state{module=Module, init_args=Init_Args} = State) ->
-    ok = apply(Module, init, Init_Args),
-    {noreply, State};
+%handle_info(timeout, State) ->
+    %ok = apply(Module, init, Init_Args),
+    %{noreply, State};
 handle_info(Request, State) ->
     io:format("~p~n", [Request]),
     {noreply, State}.
 
-terminate(_Reason, _State) ->
+terminate(Reason, State) ->
+    io:format("~p, ~p~n", [Reason, State]),
     ok.
 
 code_change(_OldVsn, State, _Extra) ->
@@ -72,13 +77,4 @@ code_change(_OldVsn, State, _Extra) ->
 %% ------------------------------------------------------------------
 %% Internal Function Definitions
 %% ------------------------------------------------------------------
-spawn_node({Module, Init, Init_Args}) ->
-
-    ok.
-
-activate_node({_Node}) ->
-    ok.
-
-destroy_node({_Node}) ->
-    ok.
 
