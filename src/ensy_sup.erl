@@ -23,7 +23,7 @@ start_link() ->
 %% ===================================================================
 
 init([]) ->
-    Node_Module = foo,
+    Node_Module = stub_model,
     Clock = {ensy_clock, {ensy_clock, start_link, [{iterations, 200}]},
         temporary, 2000, worker, [ensy_clock]},
     Activator = {ensy_activator, {ensy_activator, start_link, [{stub_module, Node_Module, []}]},

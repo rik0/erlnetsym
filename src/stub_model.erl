@@ -1,13 +1,16 @@
 -module(stub_model).
+-behaviour(ensy_activator).
 
-init(Whatever) ->
+-export([init/1, to_spawn/2, to_destroy/2, to_activate/2]).
+
+init(_Whatever) ->
     ok.
 
-spawner(Age) ->
-    [].
+to_spawn(ok, _Age) ->
+    {ok, []}.
 
-destroyer(Age) ->
-    [].
+to_destroy(ok, _Age) ->
+    {ok, []}.
 
-activator(Age) ->
-    [].
+to_activate(ok, Age) ->
+    {ok, []}.
