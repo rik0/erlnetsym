@@ -4,7 +4,8 @@
 
 %% API
 -export([start_link/1,
-         start_child/1]).
+         start_child/1,
+         terminate_child/1]).
 
 %% Supervisor callbacks
 -export([init/1]).
@@ -20,6 +21,9 @@ start_link({stub_module, Node_Module}) ->
 
 start_child(Opts) ->
     supervisor:start_child(?SERVER, Opts).
+
+terminate_child(Pid) ->
+    supervisor:terminate_child(?SERVER, Pid).
 
 %% ===================================================================
 %% Supervisor callbacks

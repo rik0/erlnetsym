@@ -78,11 +78,11 @@ behaviour_info(_Other) ->
 %% Internal Function Definitions
 %% ------------------------------------------------------------------
 
-spawn_node({_Node_Module, _Args}) ->
-    ok.
+spawn_node({_Node_Module, Args}) ->
+    ensy_nodes_sup:start_child(Args).
 
-destroy_node(_Node_Id) ->
-    ok.
+destroy_node(Node_Id) ->
+    ensy_nodes_sup:terminate_child(Node_Id).
 
 activate_node(_Node_Id) ->
     ok.
