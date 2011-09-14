@@ -100,7 +100,7 @@ handle_call(request_connection, From,
     #state{stub=Stub,
         stub_state=Opaque_State,
         neighbours=Neighbours} = State) ->
-    case Stub:should_connect(Opaque_State, From) of
+    case Stub:should_connect(Opaque_State, From, Neighbours) of
         {true, New_Stub, New_Opaque_State} ->
             {reply, ok,
                 State#state{
@@ -121,6 +121,17 @@ handle_cast({activate, Age},
     #state{stub=Stub, stub_state=Opaque_State} = State) ->
     {New_Stub, New_Opaque_State} = Stub:handle_activate(Opaque_State, Age),
     {noreply, State#state{stub=New_Stub, stub_state=New_Opaque_State}};
+handle_cast({drop_connection, From},
+    #state{stub=Stub, 
+        stub_state=Opaque_State,
+        neighbours=Neighbours} = State) ->
+    New_Neighbours = sets:del_element(From, Neighbours),
+    {New_Stub, New_Opaque_State} = Stub:handle_drop_connection(
+        Opaque_State, From, Neighbours),
+    {noreply, State#state{
+            stub=New_Stub, 
+            stub_state=New_Opaque_State,
+            neighbours=New_Neighbours}};
 handle_cast(Msg, #state{stub=Stub, stub_state=Opaque_State} = State) ->
     case Stub:handle_cast(Msg, Opaque_State) of
         {noreply, {New_Stub, New_Opaque_State}} ->
