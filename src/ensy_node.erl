@@ -43,7 +43,9 @@ activate(Node, Age) ->
 
 init({Stub, Init_Args}) ->
     Opaque_State = Stub:init(Init_Args),
-    {ok, #state{stub=Stub, neighbours=sets:new(), stub_state=Opaque_State}}.
+    {ok, #state{stub=Stub, 
+            neighbours=sets:new(), 
+            stub_state=Opaque_State}}.
 
 handle_call(request_connection, From,
     #state{stub=Stub,
@@ -55,8 +57,7 @@ handle_call(request_connection, From,
                 State#state{
                     stub=New_Stub,
                     stub_state=New_Opaque_State,
-                    neighbours=sets:add_element(
-                        From, Neighbours)}};
+                    neighbours=sets:add_element(From, Neighbours)}};
         {false, New_Stub, New_Opaque_State} ->
             {reply, fail,
                 State#state{
