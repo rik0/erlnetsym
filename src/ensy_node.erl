@@ -8,6 +8,7 @@
 
 -export([start_link/0,
         request_connection/1,
+        drop_connection/1,
         activate/2]).
 
 %% ------------------------------------------------------------------
@@ -25,14 +26,22 @@
 %% API Function Definitions
 %% ------------------------------------------------------------------
 
+%% @doc Starts a generic node.
+%%
+%% @spec start_link() -> {ok, Pid} 
+%%                    | {error, {already_started, Pid}}
+%%                    | {error, Reason}
+
 start_link() ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
+-spec request_connection(pid()) -> ok | fail.
 request_connection(Target) ->
-    case gen_server:call(Target, request_connection) of
-        ok -> ok;
-        _ -> fail
-    end.
+    gen_server:call(Target, request_connection).
+
+-spec drop_connection(pid()) -> {ok, 1} | {ok, 0} | fail.
+drop_connection(Target) ->
+    gen_server:call(Target, drop_connection).
 
 activate(Node, Age) ->
     gen_server:cast(Node, {activate, Age}).
@@ -98,6 +107,7 @@ terminate(_Reason, _State) ->
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
 
+-spec behaviour_info(atom()) -> 'undefined' | [{atom(), arity()}].
 
 behaviour_info(callbacks) ->
     [{init, 1},
