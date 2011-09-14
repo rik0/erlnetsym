@@ -1,3 +1,31 @@
+
+%%% @author Enrico Franchi <enrico.franchi@gmail.com>
+%%% @copyright 2011 Enrico Franchi
+%%% @doc To implement an actual node in the network the
+%%% user provides some callback functions.
+%%%
+%%% The user module supplies the functions:
+%%% 
+%%% ```
+%%%  init(Init_Args) 
+%%%    ==> Opaque_State
+%%%
+%%%  should_connect(Opaque_State, From)
+%%%    ==> {bool(), New_Stub, New_Opaque_State}
+%%%
+%%%  should_drop_connection(Opaque_State, From)
+%%%    ==> {bool(), New_Stub, New_Opaque_State}
+%%%  
+%%%  handle_activate(Opaque_State, Age)
+%%%    ==> {New_Stub, New_Opaque_State}
+%%% '''
+%%% 
+%%% 
+%%% 
+%%%  baz.
+%%% @end
+%%% -----------------------------------------------------
+
 -module(ensy_node).
 -behaviour(gen_server).
 -define(SERVER, ?MODULE).
@@ -28,21 +56,26 @@
 
 %% @doc Starts a generic node.
 %%
-%% @spec start_link() -> {ok, Pid} 
+%% @spec start_link() -> {ok, Pid}
 %%                    | {error, {already_started, Pid}}
 %%                    | {error, Reason}
-
 start_link() ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
--spec request_connection(pid()) -> ok | fail.
+%% @spec request_connection(pid()) -> ok | fail
+%% @doc Send a connection request to `Target'.
 request_connection(Target) ->
     gen_server:call(Target, request_connection).
 
--spec drop_connection(pid()) -> {ok, 1} | {ok, 0} | fail.
-drop_connection(Target) ->
-    gen_server:call(Target, drop_connection).
 
+%% @spec drop_connection(pid()) -> ok
+%% @doc Informs `Target' that the link should be severed.
+drop_connection(Target) ->
+    gen_server:cast(Target, drop_connection).
+
+%% @spec activate(Node::pid(), Age::age()) -> ok
+%% @doc Send an activation message to `Node'. This is usually 
+%% sent by the activator process.
 activate(Node, Age) ->
     gen_server:cast(Node, {activate, Age}).
 
@@ -50,6 +83,13 @@ activate(Node, Age) ->
 %% gen_server Function Definitions
 %% ------------------------------------------------------------------
 
+%% @spec init(Args::{Stub::module(), Init_Args}) -> {ok, State}
+%% @doc Initializes the current node.
+%%
+%% `Stub' is an atom representing the functions where the callback
+%% functions are defined. `Init_Args' are passed to an initialization
+%% function defined in that module as `Stub:init(Init_Args)'.
+%% @end
 init({Stub, Init_Args}) ->
     Opaque_State = Stub:init(Init_Args),
     {ok, #state{stub=Stub, 
