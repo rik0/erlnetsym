@@ -10,26 +10,48 @@
 %%%  init(Init_Args) 
 %%%    ==> Opaque_State
 %%%
-%%%  should_connect(Opaque_State, From)
+%%%  should_connect(Opaque_State, From::pid(), Neighbours::[pid()])
 %%%    ==> {bool(), New_Stub, New_Opaque_State}
 %%%
-%%%  handle_activate(Opaque_State, Age)
+%%%  handle_activate(Opaque_State, Age::age())
 %%%    ==> {New_Stub, New_Opaque_State}
+%%% 
+%%%  handle_drop_connection(Opaque_State, From::pid(), Neighbours::[pid()])
+%%%    ==> {New_Stub, New_Opaque_State}
+%%%
 %%% '''
 %%%
+%%%
+%%% `init' initializes the stub module and return the Opaque_State
+%%% that will be passed to all the stub callback functions. These
+%%% usually return a tuple containing also a `New_Stub' and a 
+%%% `New_Opaque_State'.
+%%%
+%%% `should_connect' takes an `Opaque_State' and a the pid of the 
+%%% node which is requiring the connection and the list of the nodes
+%%% currently connected to self(). The first element in the returned
+%%% tuple is a boolean which represents the decision of the stub
+%%% whether to connect or not.
 %%% `New_Stub' is a new stub which will be used to handle future
 %%% messages in place of the `Stub'. Usually it is the same than
 %%% `Stub'. `New_Opaque_State' is an opaque state that can be
 %%% understood by the new stub.
 %%%
-%%% At the moment, there is no
-%%% support for initializing the `New_Stub' with some `Init_Args'.
-%%% Consequently, it must be able to work without initialization,
+%%% At the moment, there is no support for initializing the `New_Stub' with some
+%%% `Init_Args'.  Consequently, it must be able to work without initialization,
 %%% just receiving `New_Stub'.  This feature is however useful to use a strategy
-%%% like pattern instead of flags: essentially the former stub should
-%%% know about the new one and should ensure that things are going
-%%% to work.
-%%% 
+%%% like pattern instead of flags: essentially the former stub should know about
+%%% the new one and should ensure that things are going to work.
+%%%
+%%% `handle_activate' is the callback which exectures whatever it has to be done
+%%% when an activate message is sent (e.g., try to connect to the more popular
+%%% node).
+%%%
+%%% `handle_drop_connection' is called when a node severed its connection
+%%% with the current node. This is unilateral and cannot be avoided.
+%%% However, actions can be performed (e.g., try to negotiate to establish
+%%% the connection again.
+%%%
 %%% Moreover, the usual `handle_cast', `handle_info', `handle_call' are
 %%% forwarded to the stub if the message could not be intercepted
 %%% by this module (e.g., request_connection and drop_connection
@@ -139,25 +161,25 @@ handle_call(Request, From,
        {reply, Reply, {New_Stub, New_Opaque_State}} ->
            {reply, Reply,
             State#state{stub=New_Stub, stub_state=New_Opaque_State}};
-       {reply,Reply, {New_Stub, New_Opaque_State},Timeout} -> 
-           {reply, Reply,
-            State#state{stub=New_Stub, stub_state=New_Opaque_State},
-            Timeout};
        {reply,Reply,{New_Stub, New_Opaque_State},hibernate} ->
            {reply, Reply,
             State#state{stub=New_Stub, stub_state=New_Opaque_State},
             hibernate};
+       {reply,Reply, {New_Stub, New_Opaque_State},Timeout} -> 
+           {reply, Reply,
+            State#state{stub=New_Stub, stub_state=New_Opaque_State},
+            Timeout};
        {noreply,{New_Stub, New_Opaque_State}}  ->
            {noreply,
             State#state{stub=New_Stub, stub_state=New_Opaque_State}};
-       {noreply, {New_Stub, New_Opaque_State}, Timeout} ->
-           {noreply,
-            State#state{stub=New_Stub, stub_state=New_Opaque_State},
-            Timeout};
        {noreply,{New_Stub, New_Opaque_State},hibernate} ->
            {noreply,
             State#state{stub=New_Stub, stub_state=New_Opaque_State},
             hibernate};
+       {noreply, {New_Stub, New_Opaque_State}, Timeout} ->
+           {noreply,
+            State#state{stub=New_Stub, stub_state=New_Opaque_State},
+            Timeout};
        {stop,Reason,Reply,{New_Stub, New_Opaque_State}} ->
            {stop, Reason, Reply,
             State#state{stub=New_Stub, stub_state=New_Opaque_State}};
@@ -198,8 +220,23 @@ handle_cast(Msg, #state{stub=Stub, stub_state=Opaque_State} = State) ->
                     stub_state=New_Opaque_State}}
     end.
 
-handle_info(_Info, State) ->
-    {noreply, State}.
+handle_info(Info, #state{stub=Stub, stub_state=Opaque_State} = State) ->
+    case Stub:handle_info(Info, Opaque_State) of
+        {noreply,{New_Stub, New_Opaque_State}} ->
+            {noreply,
+                State#state{stub=New_Stub, stub_state=New_Opaque_State}};
+        {noreply,{New_Stub, New_Opaque_State},hibernate} -> 
+            {noreply,
+                State#state{stub=New_Stub, stub_state=New_Opaque_State},
+                hibernate};
+        {noreply,{New_Stub, New_Opaque_State},Timeout} -> 
+            {noreply,
+                State#state{stub=New_Stub, stub_state=New_Opaque_State},
+                Timeout};
+        {stop,Reason,{New_Stub, New_Opaque_State}} ->
+            {stop, Reason, 
+                State#state{stub=New_Stub, stub_state=New_Opaque_State}}
+        end.
 
 terminate(_Reason, _State) ->
     ok.
@@ -210,8 +247,13 @@ code_change(_OldVsn, State, _Extra) ->
 -spec behaviour_info(atom()) -> 'undefined' | [{atom(), arity()}].
 
 behaviour_info(callbacks) ->
-    [{init, 1},
-        {handle_cast, 2}
+    [
+        {init, 1},
+        {handle_cast, 2},
+        {handle_call, 3},
+        {handle_info, 2},
+        {handle_activate, 2},
+        {should_connect, 2}
     ];
 behaviour_info(_Other) ->
     undefined.
