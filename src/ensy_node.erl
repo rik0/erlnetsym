@@ -13,17 +13,33 @@
 %%%  should_connect(Opaque_State, From)
 %%%    ==> {bool(), New_Stub, New_Opaque_State}
 %%%
-%%%  should_drop_connection(Opaque_State, From)
-%%%    ==> {bool(), New_Stub, New_Opaque_State}
-%%%  
 %%%  handle_activate(Opaque_State, Age)
 %%%    ==> {New_Stub, New_Opaque_State}
 %%% '''
+%%%
+%%% `New_Stub' is a new stub which will be used to handle future
+%%% messages in place of the `Stub'. Usually it is the same than
+%%% `Stub'. `New_Opaque_State' is an opaque state that can be
+%%% understood by the new stub.
+%%%
+%%% At the moment, there is no
+%%% support for initializing the `New_Stub' with some `Init_Args'.
+%%% Consequently, it must be able to work without initialization,
+%%% just receiving `New_Stub'.  This feature is however useful to use a strategy
+%%% like pattern instead of flags: essentially the former stub should
+%%% know about the new one and should ensure that things are going
+%%% to work.
 %%% 
-%%% 
-%%% 
-%%%  baz.
-%%% @end
+%%% Moreover, the usual `handle_cast', `handle_info', `handle_call' are
+%%% forwarded to the stub if the message could not be intercepted
+%%% by this module (e.g., request_connection and drop_connection
+%%% are already intercepted by this base node.
+%%% In this case, the callback is only passed the `Opaque_State'.
+%%% The return value is expected to follow the same rules of the
+%%% corresponding OTP functions. However, whenever a `State' is to
+%%% returned a tuple `{New_Stub, New_State}'; `New_Stub' may be diffent
+%%% from Stub and should follow the same rules mentioned in the case
+%%% of the other callbacks.
 %%% -----------------------------------------------------
 
 -module(ensy_node).
@@ -67,9 +83,11 @@ start_link() ->
 request_connection(Target) ->
     gen_server:call(Target, request_connection).
 
-
 %% @spec drop_connection(pid()) -> ok
 %% @doc Informs `Target' that the link should be severed.
+%% If target would not like the link to be severed, than
+%% it can only recast a request_connection and hope it
+%% will be accepted.
 drop_connection(Target) ->
     gen_server:cast(Target, drop_connection).
 
@@ -86,7 +104,7 @@ activate(Node, Age) ->
 %% @spec init(Args::{Stub::module(), Init_Args}) -> {ok, State}
 %% @doc Initializes the current node.
 %%
-%% `Stub' is an atom representing the functions where the callback
+%% `Stub' is an atom representing the module where the callback
 %% functions are defined. `Init_Args' are passed to an initialization
 %% function defined in that module as `Stub:init(Init_Args)'.
 %% @end
@@ -114,8 +132,39 @@ handle_call(request_connection, From,
                     stub_state=New_Opaque_State,
                     neighbours=Neighbours}}
     end;
-handle_call(_Request, _From, State) ->
-    {noreply, ok, State}.
+handle_call(Request, From, 
+           #state{stub=Stub,
+                 stub_state=Opaque_State} = State) ->
+   case Stub:handle_call(Request, From, Opaque_State) of
+       {reply, Reply, {New_Stub, New_Opaque_State}} ->
+           {reply, Reply,
+            State#state{stub=New_Stub, stub_state=New_Opaque_State}};
+       {reply,Reply, {New_Stub, New_Opaque_State},Timeout} -> 
+           {reply, Reply,
+            State#state{stub=New_Stub, stub_state=New_Opaque_State},
+            Timeout};
+       {reply,Reply,{New_Stub, New_Opaque_State},hibernate} ->
+           {reply, Reply,
+            State#state{stub=New_Stub, stub_state=New_Opaque_State},
+            hibernate};
+       {noreply,{New_Stub, New_Opaque_State}}  ->
+           {noreply,
+            State#state{stub=New_Stub, stub_state=New_Opaque_State}};
+       {noreply, {New_Stub, New_Opaque_State}, Timeout} ->
+           {noreply,
+            State#state{stub=New_Stub, stub_state=New_Opaque_State},
+            Timeout};
+       {noreply,{New_Stub, New_Opaque_State},hibernate} ->
+           {noreply,
+            State#state{stub=New_Stub, stub_state=New_Opaque_State},
+            hibernate};
+       {stop,Reason,Reply,{New_Stub, New_Opaque_State}} ->
+           {stop, Reason, Reply,
+            State#state{stub=New_Stub, stub_state=New_Opaque_State}};
+       {stop,Reason,{New_Stub, New_Opaque_State}} ->
+           {stop, Reason,
+            State#state{stub=New_Stub, stub_state=New_Opaque_State}}
+   end.
 
 handle_cast({activate, Age}, 
     #state{stub=Stub, stub_state=Opaque_State} = State) ->
