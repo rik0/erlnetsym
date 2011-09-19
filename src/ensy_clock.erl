@@ -2,6 +2,7 @@
 -behaviour(gen_server).
 -define(SERVER, ?MODULE).
 -include("time.hrl").
+%% @headerfile "time.hrl"
 
 %% ------------------------------------------------------------------
 %% API Function Exports
@@ -21,6 +22,12 @@
 %% API Function Definitions
 %% ------------------------------------------------------------------
 
+-spec start_link(pos_integer()) -> any().
+%% @doc Starts the clock. 
+%%
+%% `Iterations' is the number of iterations the simulation is meant to do.
+%% After that, the clock sends and `eow' message to the activator and 
+%% everything stops.
 start_link(Iterations) ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, Iterations, []).
 
@@ -28,15 +35,24 @@ start_link(Iterations) ->
 %% gen_server Function Definitions
 %% ------------------------------------------------------------------
 
+%% @hidden
+-spec init({iterations, Max_Ticks::pos_integer()}) -> {ok, age(), 0}.
 init({iterations, Max_Ticks}) ->
-    {ok, #age{current=0, max=Max_Ticks}, 0}.
+	Age = #age{current=0, max=Max_Ticks},
+    {ok, Age, 0}.
 
+%% @hidden
 handle_call(_Request, _From, State) ->
     {noreply, ok, State}.
 
+%% @hidden
 handle_cast(_Msg, State) ->
     {noreply, State}.
 
+%% @hidden
+%% @doc We are using timeouts to wake up to send the `tick' 
+%% messages to the activator.
+%% @end
 handle_info(timeout, #age{current = Current, max=Max} = Time) ->
     case Current of
         Max -> 
@@ -50,9 +66,11 @@ handle_info(Info, State) ->
     error_logger:info_report({unknown_data, Info}),
     {noreply, State}.
 
+%% @hidden
 terminate(_Reason, _State) ->
     ok.
 
+%% @hidden
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
 

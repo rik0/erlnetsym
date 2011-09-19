@@ -29,10 +29,9 @@
 %% @type opaque_state(). The state used by the callback module.
 -opaque opaque_state() :: any().
 
-%% @type state() = {Stub::module(), opaque_state()}.
-%% `Stub' is the module where the callbacks are defined.
--type state() :: {module(), opaque_state()}.
+%% @type state() = #state{stub = module(), stub_state = opaque_state()}. `Stub' is the module where the callbacks are defined.
 -record(state, {stub, stub_state}).
+-type state() :: #state{stub::module(), stub_state::opaque_state()}.
 
 %% ------------------------------------------------------------------
 %% API Function Exports
@@ -91,6 +90,7 @@ init({Module, Init_Args}) ->
     {ok, #state{stub=Module, stub_state=Opaque_Stub_Handler}, 0}.
 
 % @hidden
+-spec handle_cast({atom(), Age::age()}, state()) -> {noreply, state()}.
 handle_cast({tick, Age}, #state{stub=Module, stub_state=Opaque_Stub_Handler} = State) ->
     {OSH1, To_Spawn} = Module:to_spawn(Opaque_Stub_Handler, Age),
     {OSH2, To_Activate} = Module:to_activate(OSH1, Age),
