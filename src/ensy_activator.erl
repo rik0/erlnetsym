@@ -4,11 +4,21 @@
 %%% @doc The activator module uses a callback module where the
 %%% functions:
 %%% ```
-%%% to_spawn(opaque_state(), age()) -> {opaque_state(), [{node_stub, [Init_Args11::any()]}]}.
+%%% to_spawn(opaque_state(), age()) -> {opaque_state(), [{node_stub, [Init_Args::any()]}]}.
 %%% to_activate(opaque_state(), age()) -> {opaque_state(), [pid()]}.
 %%% to_destroy(opaque_state(), age()) -> {opaque_state(), [pid()]}.
 %%% '''
 %%% are defined.
+%%% The elements of the list returned by to_spawn are tuples where the first element
+%%% indicates the name of the module the newly created nodes use and the second element
+%%% is a list of initial argument values. A new node is created for each value in the 
+%%% list. Note that if the nodes need a list as an initial argument, the second element
+%%% of the tuple will be a list of lists. 
+%%% Multiple kind of nodes can be specified. For example:
+%%% ```[{kind1, [a, b, c]}, {kind2 [d]}]'''
+%%% will create 4 nodes: three of kind `kind', respectively initialized with a, b and c
+%%% and one of kind `kind2' initialized with d.
+%%% @end
 -module(ensy_activator).
 -behaviour(gen_server).
 -define(SERVER, ?MODULE).
