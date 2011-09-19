@@ -1,7 +1,7 @@
 -module(ensy_clock).
 -behaviour(gen_server).
 -define(SERVER, ?MODULE).
--include("include/time.hrl").
+-include("time.hrl").
 
 %% ------------------------------------------------------------------
 %% API Function Exports

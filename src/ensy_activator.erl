@@ -1,7 +1,7 @@
 -module(ensy_activator).
 -behaviour(gen_server).
 -define(SERVER, ?MODULE).
--include("include/time.hrl").
+-include("time.hrl").
 
 -record(state, {stub, stub_state}).
 
