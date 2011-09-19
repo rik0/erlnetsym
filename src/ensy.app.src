@@ -2,11 +2,11 @@
  [
   {description, "Network Generation Toolkit"},
   {vsn, "0.0.1"},
-  {registered, [ensy_activator]},
+  {registered, [ensy_activator, ensy_clock, ensy_nodes_sup]},
   {applications, [
                   kernel,
                   stdlib
                  ]},
   {mod, { ensy_app, []}},
-  {env, []}
+  {env, [{activator_stub, preferential_attachment}]}
  ]}.
