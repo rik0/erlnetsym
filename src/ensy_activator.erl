@@ -17,8 +17,11 @@
 %% @headerfile "time.hrl"
 
 %% @type opaque_state(). The state used by the callback module.
+-opaque opaque_state() :: any().
+
 %% @type state() = {Stub::module(), opaque_state()}.
 %% `Stub' is the module where the callbacks are defined.
+-type state() :: {module(), opaque_state()}.
 -record(state, {stub, stub_state}).
 
 %% ------------------------------------------------------------------
@@ -54,7 +57,7 @@ start_link({stub_module, Module, Init_Args}) ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, 
         {Module, Init_Args}, []).
 
-% @spec tick(Age::age()) -> ok
+-spec tick(Age::age()) -> ok.
 % @doc Send a tick message to the node activator. The activator
 % uses the callbacks to determine which nodes to create, which nodes
 % to activate and which nodes to destroy. It is an error to call this
@@ -62,7 +65,7 @@ start_link({stub_module, Module, Init_Args}) ->
 tick(Age) ->
     gen_server:cast(?SERVER, {tick, Age}).
 
-% @spec eow(Age::age()) -> Result
+-spec eow(Age::age()) -> {ok, Age::age()}.
 % @doc Notifies the activator that the simulation ended. It is an error
 % to call this function from other than the clock.
 eow(Age) ->
@@ -72,7 +75,7 @@ eow(Age) ->
 %% gen_server Function Definitions
 %% ------------------------------------------------------------------
 % @hidden
-% @spec init({Module::module(), Init_Args::[atom()]}) -> {ok, State, Timeout}
+-spec init({Module::module(), Init_Args::[atom()]}) -> {ok, state(), non_neg_integer()}.
 init({Module, Init_Args}) ->
     Opaque_Stub_Handler = Module:init(Init_Args),
     {ok, #state{stub=Module, stub_state=Opaque_Stub_Handler}, 0}.
