@@ -60,11 +60,10 @@
 % the activator are defined. `Init_Args' are passed to the stub module
 % init function.
 % Result is a the result of @see gen_server:start_link/4.
-% Result is a the result of @see tick/1.
 % @end
 start_link({stub_module, Module, Init_Args}) ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, 
-        {Module, Init_Args}, []).
+        [Module, Init_Args], []).
 
 -spec tick(Age::age()) -> ok.
 % @doc Send a tick message to the node activator. The activator
@@ -84,8 +83,11 @@ eow(Age) ->
 %% gen_server Function Definitions
 %% ------------------------------------------------------------------
 % @hidden
--spec init({Module::module(), Init_Args::[atom()]}) -> {ok, state(), non_neg_integer()}.
-init({Module, Init_Args}) ->
+-spec init(Args::[term()]) -> {ok, state(), non_neg_integer()}.
+%% @doc The initialization arguments are
+%% Args = [Module::module(), Init_Args::[atom()]
+%% @end
+init([Module, Init_Args]) ->
     Opaque_Stub_Handler = Module:init(Init_Args),
     {ok, #state{stub=Module, stub_state=Opaque_Stub_Handler}}.
 

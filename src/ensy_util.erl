@@ -1,6 +1,5 @@
 %% Author: enrico
 %% Created: Sep 20, 2011
-%% Description: TODO: Add description to ensy_util
 -module(ensy_util).
 
 %%
