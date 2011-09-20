@@ -2,8 +2,8 @@
 % vi: filetype=erlang
 %% -*- erlang -*-
 %% -smp enable -pa ebin -boot start_sasl
-%%! -smp enable -pa ebin 
-%% -smp enable -pa ebin -boot start_sasl -sasl sasl_error_logger '{file, "ensy.log"}'
+%% -smp enable -pa ebin 
+%%! -smp enable -pa ebin -boot start_sasl -sasl '{sasl_error_logger, {file, "/tmp/ensy.log"}'
 
 
 main(_Args) ->

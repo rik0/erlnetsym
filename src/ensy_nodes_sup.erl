@@ -4,7 +4,7 @@
 
 %% API
 -export([start_link/0,
-         start_child/1,
+         start_child/2,
          terminate_child/1]).
 
 %% Supervisor callbacks
@@ -19,8 +19,9 @@
 start_link() ->
     supervisor:start_link({local, ?SERVER}, ?MODULE, []).
 
-start_child(Opts) ->
-    supervisor:start_child(?SERVER, Opts).
+start_child(Stub_Module, Init_Args) ->
+	% io:format("I'm fine: ~p, ~p~n", [Stub_Module, Init_Args]),
+    supervisor:start_child(?SERVER, [Stub_Module, Init_Args]).
 
 terminate_child(Pid) ->
     supervisor:terminate_child(?SERVER, Pid).

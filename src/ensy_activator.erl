@@ -95,9 +95,9 @@ handle_cast({tick, Age}, #state{stub=Module, stub_state=Opaque_Stub_Handler} = S
     {OSH1, To_Spawn} = Module:to_spawn(Opaque_Stub_Handler, Age),
     {OSH2, To_Activate} = Module:to_activate(OSH1, Age),
     {OSH3, To_Destroy} = Module:to_destroy(OSH2, Age),
-    lists:map(fun spawn_node/1, To_Spawn),
-    lists:map(fun activate_node/1, To_Activate),
-    lists:map(fun destroy_node/1, To_Destroy),
+    lists:foreach(fun spawn_node/1, To_Spawn),
+    lists:foreach(fun activate_node/1, To_Activate),
+    lists:foreach(fun destroy_node/1, To_Destroy),
     {noreply, State#state{stub_state=OSH3}}.
 
 % @hidden
@@ -130,9 +130,10 @@ behaviour_info(_Other) ->
 %% ------------------------------------------------------------------
 
 % @private
-spawn_node({_Node_Module, Args}) ->
-    %ensy_nodes_sup:start_child(Args).
-	ok.
+spawn_node({Node_Module, Cumulative_Args}) ->
+	lists:foreach(fun(Init_Args) -> 
+    	ensy_nodes_sup:start_child(Node_Module, Init_Args) end,
+		Cumulative_Args).
 
 % @private
 destroy_node(Node_Id) ->
