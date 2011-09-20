@@ -1,3 +1,6 @@
+% vi: filetype=erlang
+%% -*- erlang -*-
+
 {application, ensy,
  [
   {description, "Network Generation Toolkit"},
