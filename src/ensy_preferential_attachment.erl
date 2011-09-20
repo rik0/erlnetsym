@@ -22,9 +22,7 @@
 -type state() :: {pos_integer(), pos_integer()}.
 
 -spec init({N::pos_integer(), M::pos_integer()}) -> state().
-%% @doc Initializes the model.
-%%
-%% The model starts which `N' nodes. How the nodes are linked is not
+%% @doc Initializes the model. The model starts which `N' nodes. How the nodes are linked is not
 %% specified (yet). Different possibilities exist (no links, random).
 %% @end
 init({N, M}) ->

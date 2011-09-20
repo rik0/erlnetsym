@@ -37,7 +37,7 @@
 %% API Function Exports
 %% ------------------------------------------------------------------
 
--export([tick/1, eow/1, start_link/1]).
+-export([tick/1, eow/1, start_link/2]).
 -export([behaviour_info/1]).
 
 
@@ -53,7 +53,7 @@
 %% API Function Definitions
 %% ------------------------------------------------------------------
 
--spec start_link({stub_module, module(), [atom()]}) -> Result::any().
+-spec start_link(module(), [term()]) -> Result::any().
 % @doc Starts the nodes activator.
 % 
 % `Module' is an atom representing the module where the callbacks for
@@ -61,7 +61,7 @@
 % init function.
 % Result is a the result of @see gen_server:start_link/4.
 % @end
-start_link({stub_module, Module, Init_Args}) ->
+start_link(Module, Init_Args) ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, 
         [Module, Init_Args], []).
 
@@ -82,7 +82,7 @@ eow(Age) ->
 %% ------------------------------------------------------------------
 %% gen_server Function Definitions
 %% ------------------------------------------------------------------
-% @hidden
+
 -spec init(Args::[term()]) -> {ok, state(), non_neg_integer()}.
 %% @doc The initialization arguments are
 %% Args = [Module::module(), Init_Args::[atom()]

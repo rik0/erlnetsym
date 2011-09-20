@@ -29,15 +29,15 @@
 %% After that, the clock sends and `eow' message to the activator and 
 %% everything stops.
 start_link(Iterations) ->
-    gen_server:start_link({local, ?SERVER}, ?MODULE, Iterations, []).
+    gen_server:start_link({local, ?SERVER}, ?MODULE, [Iterations], []).
 
 %% ------------------------------------------------------------------
 %% gen_server Function Definitions
 %% ------------------------------------------------------------------
 
 %% @hidden
--spec init({iterations, Max_Ticks::pos_integer()}) -> {ok, age(), 100}.
-init({iterations, Max_Ticks}) ->
+-spec init([pos_integer()]) -> {ok, age(), 100}.
+init([Max_Ticks]) ->
 	Age = #age{current=0, max=Max_Ticks},
     {ok, Age, 0}.
 

@@ -10,7 +10,7 @@
 %% ===================================================================
 
 start(_StartType, _StartArgs) ->
-    {ok, Pid} = ensy_sup:start_link().
+    {ok, _Pid} = ensy_sup:start_link().
 
 stop(_State) ->
     ok.

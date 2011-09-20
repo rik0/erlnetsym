@@ -94,7 +94,7 @@
 
 %% @doc Starts a generic node.
 %%
-%% @spec start_link() -> {ok, Pid}
+%% @spec start_link(module(), [term()]) -> {ok, Pid}
 %%                    | {error, {already_started, Pid}}
 %%                    | {error, Reason}
 start_link(Stub, Init_Args) ->
