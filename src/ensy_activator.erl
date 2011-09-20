@@ -87,7 +87,7 @@ eow(Age) ->
 -spec init({Module::module(), Init_Args::[atom()]}) -> {ok, state(), non_neg_integer()}.
 init({Module, Init_Args}) ->
     Opaque_Stub_Handler = Module:init(Init_Args),
-    {ok, #state{stub=Module, stub_state=Opaque_Stub_Handler}, 0}.
+    {ok, #state{stub=Module, stub_state=Opaque_Stub_Handler}}.
 
 % @hidden
 -spec handle_cast({atom(), Age::age()}, state()) -> {noreply, state()}.

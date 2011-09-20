@@ -5,17 +5,13 @@
 -module(ensy_preferential_attachment).
 -behaviour(ensy_activator).
 
--include("time.hrl").
-%% @headerfile "time.hrl"
-
 %%
 %% Include files
 %%
 
-%%
-%% Exported Functions
-%%
--export([]).
+-include("time.hrl").
+%% @headerfile "time.hrl"
+
 
 %%
 %% API Functions
@@ -35,10 +31,8 @@ init({N, M}) ->
 
 -spec to_spawn(state(), age()) -> {state(), [{atom(), [any()]}]}.
 to_spawn({N, M} = State, #age{current=0}) ->
-	io:write(woooo), io:nl(),
     {State, []};
 to_spawn({N, M} = State, Age) ->
-	io:write(blah), io:nl(),
     {State, []}.
 
 -spec to_destroy(state(), age()) -> {state(), [pid()]}.

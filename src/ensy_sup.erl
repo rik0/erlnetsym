@@ -30,7 +30,7 @@ init([]) ->
         temporary, 2000, worker, [ensy_activator]},
     Nodes_Supervisor = {ensy_nodes_sup, {ensy_nodes_sup, start_link, [{stub_module, Node_Module}]},
                         temporary, 2000, supervisor, [ensy_nodes_sup]},
-    Children = [Clock, Activator, Nodes_Supervisor],
+    Children = [Activator, Clock, Nodes_Supervisor],
     Restart_Strategy = {one_for_one, 1, 1},
     {ok, {Restart_Strategy, Children} }.
 

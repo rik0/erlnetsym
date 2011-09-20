@@ -36,7 +36,7 @@ start_link(Iterations) ->
 %% ------------------------------------------------------------------
 
 %% @hidden
--spec init({iterations, Max_Ticks::pos_integer()}) -> {ok, age(), 0}.
+-spec init({iterations, Max_Ticks::pos_integer()}) -> {ok, age(), 100}.
 init({iterations, Max_Ticks}) ->
 	Age = #age{current=0, max=Max_Ticks},
     {ok, Age, 0}.
