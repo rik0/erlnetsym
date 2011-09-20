@@ -8,5 +8,5 @@
                   stdlib
                  ]},
   {mod, { ensy_app, []}},
-  {env, [{activator_stub, preferential_attachment}]}
+  {env, [{activator_stub, ensy_preferential_attachment}]}
  ]}.

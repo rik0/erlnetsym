@@ -131,7 +131,8 @@ behaviour_info(_Other) ->
 
 % @private
 spawn_node({_Node_Module, Args}) ->
-    ensy_nodes_sup:start_child(Args).
+    %ensy_nodes_sup:start_child(Args).
+	ok.
 
 % @private
 destroy_node(Node_Id) ->

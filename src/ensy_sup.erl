@@ -23,10 +23,10 @@ start_link() ->
 %% ===================================================================
 
 init([]) ->
-    Node_Module = stub_model,
+    {ok, Node_Module} = application:get_env(activator_stub),
     Clock = {ensy_clock, {ensy_clock, start_link, [{iterations, 200}]},
         temporary, 2000, worker, [ensy_clock]},
-    Activator = {ensy_activator, {ensy_activator, start_link, [{stub_module, Node_Module, []}]},
+    Activator = {ensy_activator, {ensy_activator, start_link, [{stub_module, Node_Module, {100, 10}}]},
         temporary, 2000, worker, [ensy_activator]},
     Nodes_Supervisor = {ensy_nodes_sup, {ensy_nodes_sup, start_link, [{stub_module, Node_Module}]},
                         temporary, 2000, supervisor, [ensy_nodes_sup]},
