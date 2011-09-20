@@ -26,24 +26,37 @@
 %%
 %% The model starts which `N' nodes. How the nodes are linked is not
 %% specified (yet). Different possibilities exist (no links, random).
+%% @end
 init({N, M}) ->
     {N, M}.
 
 -spec to_spawn(state(), age()) -> {state(), [{atom(), [any()]}]}.
-to_spawn({N, M} = State, #age{current=0}) ->
-    {State, []};
-to_spawn({N, M} = State, Age) ->
-    {State, []}.
+%% @doc N nodes are spawned just at the beginning of the network creation
+%% process. After that, a new node (with M contacts) is created at each iteration.
+to_spawn({N, _M} = State, #age{current=0}) ->
+	To_Spawn = n_isolated_nodes(N, []),
+    {State, [{ensy_ba_node, To_Spawn}]};
+to_spawn({_N, M} = State, _Age) ->
+	Connections = ensy_util:choose_by_degree(M),
+    {State, [{ensy_ba_node, Connections}]}.
 
 -spec to_destroy(state(), age()) -> {state(), [pid()]}.
+%% @doc In the Barabasi-Albert Preferential Attachment model no nodes are
+%% ever destroyed.
+%% @end
 to_destroy(State, _Age) ->
     {State, []}.
 
 -spec to_activate(state(), age()) -> {state(), [pid()]}.
-to_activate(State, Age) ->
+%% @doc In the Barabasi-Albert Preferential Attachment model no nodes are
+%% activated. When they are created they already know to which nodes to connect
+%% and just do that.
+to_activate(State, _Age) ->
     {State, []}.
 
 %%
 %% Local Functions
 %%
-
+n_isolated_nodes(0, Lst) -> Lst;
+n_isolated_nodes(N, Lst) ->
+	n_isolated_nodes(N-1, [[]|Lst]).
