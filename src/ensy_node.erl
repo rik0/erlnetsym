@@ -72,7 +72,7 @@
 %% API Function Exports
 %% ------------------------------------------------------------------
 
--export([start_link/0,
+-export([start_link/2,
         request_connection/1,
         drop_connection/1,
         activate/2]).
@@ -97,8 +97,8 @@
 %% @spec start_link() -> {ok, Pid}
 %%                    | {error, {already_started, Pid}}
 %%                    | {error, Reason}
-start_link() ->
-    gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
+start_link(Stub, Init_Args) ->
+    gen_server:start_link(?MODULE, [Stub, Init_Args], []).
 
 %% @spec request_connection(pid()) -> ok | fail
 %% @doc Send a connection request to `Target'.
@@ -130,7 +130,7 @@ activate(Node, Age) ->
 %% functions are defined. `Init_Args' are passed to an initialization
 %% function defined in that module as `Stub:init(Init_Args)'.
 %% @end
-init({Stub, Init_Args}) ->
+init([Stub, Init_Args]) ->
     Opaque_State = Stub:init(Init_Args),
     {ok, #state{stub=Stub, 
             neighbours=sets:new(), 

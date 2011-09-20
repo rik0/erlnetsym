@@ -20,7 +20,6 @@ start_link() ->
     supervisor:start_link({local, ?SERVER}, ?MODULE, []).
 
 start_child(Stub_Module, Init_Args) ->
-	% io:format("I'm fine: ~p, ~p~n", [Stub_Module, Init_Args]),
     supervisor:start_child(?SERVER, [Stub_Module, Init_Args]).
 
 terminate_child(Pid) ->

@@ -28,7 +28,6 @@
 %% BA nodes should never receive any other kind of message.
 %% @end
 init(Connections) ->
-	io:format("I've been created ~p: ~p~n", [self(), Connections]),	
 	{ok, Connections, 0}.
 
 %% @hidden
