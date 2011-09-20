@@ -24,9 +24,11 @@ start_link() ->
 
 init([]) ->
     {ok, Node_Module} = application:get_env(activator_stub),
-    Clock = {ensy_clock, {ensy_clock, start_link, [200]},
+	{ok, Activator_Setup_Args} = application:get_env(activator_stub_init),
+	{ok, Simulation_Steps} = application:get_env(simulation_steps),
+    Clock = {ensy_clock, {ensy_clock, start_link, [Simulation_Steps]},
         temporary, 2000, worker, [ensy_clock]},
-    Activator = {ensy_activator, {ensy_activator, start_link, [Node_Module, {100, 10}]},
+    Activator = {ensy_activator, {ensy_activator, start_link, [Node_Module, Activator_Setup_Args]},
         temporary, 2000, worker, [ensy_activator]},
     Nodes_Supervisor = {ensy_nodes_sup, {ensy_nodes_sup, start_link, []},
                         temporary, 2000, supervisor, [ensy_nodes_sup]},

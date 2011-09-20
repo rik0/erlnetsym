@@ -8,5 +8,7 @@
                   stdlib
                  ]},
   {mod, { ensy_app, []}},
-  {env, [{activator_stub, ensy_preferential_attachment}]}
+  {env, [{activator_stub, ensy_preferential_attachment},
+  		 {activator_stub_init, {100, 10}},
+  		 {simulation_steps, 200}]}
  ]}.
