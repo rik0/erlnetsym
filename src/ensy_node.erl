@@ -253,7 +253,8 @@ behaviour_info(callbacks) ->
         {handle_call, 3},
         {handle_info, 2},
         {handle_activate, 2},
-        {should_connect, 2}
+        {should_connect, 3},
+		{handle_drop_connection, 3}
     ];
 behaviour_info(_Other) ->
     undefined.
