@@ -8,7 +8,7 @@ ensy: tags
 	(cd lib/ensy; rebar compile)
 
 run: compile
-	./run.sh
+	./run.erl
 
 clean:
 	rebar clean
