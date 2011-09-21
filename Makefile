@@ -6,7 +6,7 @@ compile: tags
 	rebar compile
 
 run: compile
-	./run
+	./run.sh
 
 clean:
 	rebar clean
