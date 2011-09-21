@@ -28,6 +28,7 @@
 %% BA nodes should never receive any other kind of message.
 %% @end
 init(Connections) ->
+	io:format("REPORT~n"),
 	{ok, Connections, 0}.
 
 %% @hidden

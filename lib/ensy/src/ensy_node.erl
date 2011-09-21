@@ -76,6 +76,7 @@
         request_connection/1,
         drop_connection/1,
         activate/2]).
+-export([behaviour_info/1]).
 
 %% ------------------------------------------------------------------
 %% gen_server Function Exports
@@ -83,7 +84,6 @@
 
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
         terminate/2, code_change/3]).
--export([behaviour_info/1]).
 
 
 -record(state, {stub, neighbours, stub_state}).
@@ -244,8 +244,8 @@ terminate(_Reason, _State) ->
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
 
--spec behaviour_info(atom()) -> 'undefined' | [{atom(), arity()}].
 
+-spec behaviour_info(atom()) -> 'undefined' | [{atom(), arity()}].
 behaviour_info(callbacks) ->
     [
         {init, 1},
