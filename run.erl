@@ -7,7 +7,7 @@
 
 
 main(_Args) ->
-    code:add_path("ebin"),
+    code:add_path("lib/ensy/ebin"),
     application:start(sasl),
     application:start(ensy, permanent),
     lists:map(fun(App) -> io:format("~p~n", [App]) end, 

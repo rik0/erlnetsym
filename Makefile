@@ -2,8 +2,10 @@
 
 all: compile tags doc
 
-compile: tags
-	rebar compile
+compile: ensy
+
+ensy: tags
+	(cd lib/ensy; rebar compile)
 
 run: compile
 	./run.sh
@@ -15,8 +17,10 @@ tags:
 	ctags -e -R -f TAGS .
 ## ctags -R .
 
-doc:
-	rebar doc
+doc: ensy_doc
+
+ensy_doc:
+	(cd lib/ensy; rebar doc)
 
 
 
