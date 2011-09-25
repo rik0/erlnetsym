@@ -1,6 +1,11 @@
 .PHONY: tags compile clean all run doc
 
-all: compile tags doc
+all: build tags doc
+
+build: compile release
+
+release:
+	pbin/build_release.erl
 
 compile: ensy
 
@@ -8,7 +13,7 @@ ensy: tags
 	(cd lib/ensy; rebar compile)
 
 run: compile
-	./run.erl
+	erl -boot ./releases/erlnetsym -noshell -detached
 
 clean:
 	rebar clean
