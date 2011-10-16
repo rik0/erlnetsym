@@ -12,9 +12,6 @@ compile: ensy
 ensy: tags
 	(cd lib/ensy; rebar compile)
 
-run: compile
-	erl -boot ./releases/erlnetsym -config config/ba -noshell -detached
-
 clean:
 	rebar clean
 

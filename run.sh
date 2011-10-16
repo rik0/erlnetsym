@@ -1,26 +1,26 @@
 #!/bin/sh
 
-ACTIVATOR=$1;
+USAGE="usage: $0 config_name [--steps num] [--init opts...]"
+CONFIG=$1
 
-shift;
 
-echo $ACTIVATOR
-echo $@
-
-erl \
-	-s application start ensy permanent \
-    -init_debug \
-	-smp enable \
-	-pa lib/ensy/ebin  \
-	-noinput \
-    -boot start_sasl \
-	-ensy activator_stub ensy_preferential_attachment \
-    1
-	#-detached
-	#-sasl sasl_error_logger '{file, "ensy.log"}' \
-	# -ensy activator_stub ensy_preferential_attachment
-	#-detached
-		#	-sasl errlog_type all \
-	#-boot start_sasl \
-
+if  [ $# -eq 0 ]; then
+	echo $USAGE
+fi
 	
+
+shift # remove the config name
+erl -boot ./releases/erlnetsym -config config/"$CONFIG" -noshell -detached
+
+
+#while [ $# -gt 0 ]
+#do
+#    case "$1" in
+#        -v) vflag=on;;
+#		-f) filename="$2"; shift;;
+#		-*) echo >&2 usage: $0 [-v] [-f file] [file ...]"
+#	    	exit 1;;
+#		*)  break;;	# terminate while loop
+#    esac
+#    shift
+#done
