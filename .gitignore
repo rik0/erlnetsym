@@ -4,3 +4,5 @@ TAGS
 *.beam
 *.dump
 ebin/*
+*.sasl_log
+*.log
